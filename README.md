@@ -1,11 +1,9 @@
-# logic
+# LOGIC
 A programming language based on physical logic gates.
 
-## Test 1
-blah blah
+## Syntax
 
-### Test 2
-blah blah
+The syntax of the LOGIC language is similar to the BASIC syntax. Most keywords are followed by a return variable, and also 1 or more arguments. Where the arguments are spaced by a normal whitespace character.
 
-#### Test 3
-blah blah
+### Keyword usage
+`` <keyword> [return variable] <arguments> ``
