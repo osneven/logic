@@ -51,7 +51,7 @@ def tokenize_text(raw_text):
             exit(404)
 
         for token in tokens:
-            if (token.USES_REGEX and re.match(token.IDENTIFIER, raw_chunk.strip()) is not None) or (not token.USES_REGEX and raw_chunk.strip() == token.IDENTIFIER):
+            if (token.USES_REGEX and re.match(token.IDENTIFIER, raw_chunk) is not None) or (not token.USES_REGEX and raw_chunk.upper() == token.IDENTIFIER.upper()):
 
                 token_data = TokenData(token)
 
@@ -65,7 +65,7 @@ def tokenize_text(raw_text):
 
                 print ("Found a <" + token_data.TOKEN.SHOW_NAME + "> token!")
 
-                if token_data.TOKEN.EXPECTED_ARGUMENTS is not None:
+                if token_data.TOKEN.EXPECTED_ARGUMENTS is not False:
                     pass
                 else:
                     block.append(token_data)
@@ -74,10 +74,11 @@ def tokenize_text(raw_text):
 
 args = setup_argparse()
 file = get_file(args.file)
-block = tokenize_text(re.sub(r"\s+", " ", file.read().replace("\n", "<EOL>"))+"<EOL><EOF>")
+block = tokenize_text(re.sub(r"\s+", "<SPACE>", file.read().replace("\n", "<EOL>"))+"<EOL><EOF>")
 print ("\nThe following tokens were found:")
 for token_data in block:
     print (token_data.to_string())
+print ("\tTotal of", len(block), "token(s)")
 
 
 

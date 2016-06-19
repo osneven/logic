@@ -6,11 +6,11 @@ The file containing all the tokens used by the LOGIC interpreter.
 
 # Token object for hardcoded values
 class Token:
-    def __init__(self, show_name, identifier, uses_regex, function, expected_arguments):
+    def __init__(self, show_name, identifier, uses_regex, has_function, expected_arguments):
         self.SHOW_NAME = show_name
         self.IDENTIFIER = identifier
         self.USES_REGEX = uses_regex
-        self.EXEC = function
+        self.has_function = has_function
         self.EXPECTED_ARGUMENTS = expected_arguments
 
     def to_string(self):
@@ -19,8 +19,11 @@ class Token:
     def is_block(self):
         return self.SHOW_NAME == "BLOCK"
 
-    def is_tag(self):
-        return self.IDENTIFIER == "<EOF>" or self.IDENTIFIER == "<EOL>"
+    def is_variable(self):
+        return self.SHOW_NAME == "VARIABLE"
+
+    def is_value(self):
+        return self.SHOW_NAME == "VALUE"
 
 # Token data object for wrapping the Token object with dynamic data
 class TokenData:
@@ -30,9 +33,6 @@ class TokenData:
         self.block = []
 
     def to_string(self):
-        if self.TOKEN.is_tag():
-            return ""
-
         string = "{<" + self.TOKEN.SHOW_NAME + " "
         if len(self.arguments) > 0:
             string += "- "
@@ -46,9 +46,16 @@ class TokenData:
         return string.strip() + ">"
 
 tokens = [
-    Token("ECHO", "ECHO", False, )
-    Token("BLOCK", "{?(\s|\S)*}", True, None, None),
-    Token("LINE_COMMENT", "#.*<EOL>", True, None, None),
-    Token("END_OF_LINE", "<EOL>", False, None, None)
+    Token("ECHO", "ECHO(<SPACE>|<EOL>)", True, True, [["VALUE", 0, "+"]]),
+    Token("SET", "SET(<SPACE>|<EOL>)", True, True, [["VARIABLE", 1, "."], ["VALUE", 1, "+"]]),
+
+    Token("BLOCK", "{?(\s|\S)*}", True, False, False),
+    Token("VARIABLE", "\$[a-zA-Z0-9_]+(<SPACE>|<EOL>)", True, False, False),
+    Token("VALUE", "[01]+(<SPACE>|<EOL>)", True, False, False),
+
+    Token("LINE_COMMENT", "#.*<EOL>", True, False, False),
+
+    Token("END_OF_LINE", "<EOL>", False, False, False),
+    Token("WHITESPACE", "<SPACE>", True, False, False),
 ]
 
