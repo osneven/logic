@@ -1,5 +1,5 @@
 # LOGIC
-A programming language based on physical logic gates. Variables are assigned with base 2 integers.
+A programming language based on physical logic gates. Values can only be binary numbers, which can also be assigned to variables.
 
 ### Grammer
 
