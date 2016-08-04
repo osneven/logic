@@ -1,0 +1,35 @@
+' Full adder function '
+func $FULL-ADDER-1bit $A $B $Cin {
+    @1
+    XOR $a0 $A $B;
+    AND $a1 $A $B;
+    AND $b1 $a0 $Cin;
+    XOR $S $a0 $Cin;
+    OR $Cout $a1 $b1;
+    RETURN $S $Cout;
+};
+
+func $FULL-ADDER-4bit $A $B {
+    @1
+    FULL-ADDER-1bit $S0 $Cout0 $A-3 $B-3 0;
+    FULL-ADDER-1bit $S1 $Cout1 $A-2 $B-2 $Cout0;
+    FULL-ADDER-1bit $S2 $Cout2 $A-1 $B-1 $Cout1;
+    FULL-ADDER-1bit $S3 $Cout3 $A-0 $B-0 $Cout2;
+    4@LET $S $S3 $S2 $S1 $S0;
+    RETURN $S $Cout3;
+};
+@4
+
+NOT $TEST 1001;
+
+EXIT 0;
+
+
+"A + B\nA:|"
+READ $A;
+"B:|"
+READ $B;
+
+4@FULL-ADDER-4bit $S $Cout $A $B;
+
+"A + B = $S\nWith $Cout in carry"
