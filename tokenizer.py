@@ -11,7 +11,8 @@ def tokenize(raw_code):
 			block.append(current_line)
 			current_line = []
 			continue
-		current_line.append(tokendata)
+		else:
+			current_line.append(tokendata)
 		if tokendata.token.show_name == 'VERBAL':
 			block.append(current_line)
 			current_line = []
@@ -20,8 +21,8 @@ def tokenize(raw_code):
 		if tokendata.token.show_name != 'BLOCK':
 			print('\t', i, '\t->', tokendata.token.show_name, '=', str(tokendata.data))
 
-		if len(current_line) != 0 :
-			block.append(current_line)
+		#if len(current_line) != 0:
+		#	block.append(current_line)
 	return block
 
 class Tokenizer():

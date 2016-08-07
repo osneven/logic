@@ -18,18 +18,13 @@ func $FULL-ADDER-4bit $A $B {
     4@LET $S $S3 $S2 $S1 $S0;
     RETURN $S $Cout3;
 };
-@4
-
-NOT $TEST 1001;
-
-EXIT 0;
-
+@16
 
 "A + B\nA:|"
-READ $A;
-"B:|"
-READ $B;
+
+LET $A 0111010101011001;
+LET $B 0111001010110110;
 
 4@FULL-ADDER-4bit $S $Cout $A $B;
 
-"A + B = $S\nWith $Cout in carry"
+"h$A + $B = $S [$Cout]"

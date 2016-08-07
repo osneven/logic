@@ -212,13 +212,19 @@ def ins_verbal(dict, bitcap, returns, args):
 		return
 
 	# Replace variable identifiers with that variable's value
-	human = value[0] == '^'
-	if human:
+	mode = 0
+	if value[0] == 'h':
+		mode = 1
+		value = value[1:]
+	elif value[0] == 'x':
+		mode = 2
 		value = value[1:]
 	for var in dict.dictionary:
 		lookup = dict.lookup(var)
-		if human:
+		if mode == 1: # Print in base 10
 			lookup = str(int(lookup, 2))
+		elif mode == 2:
+			lookup = hex(int(lookup, 2))[2:]
 		value = value.replace('$' + var, lookup)
 
 	chunk = ''
@@ -280,7 +286,7 @@ tokens.append(Token('BLOCK', 	'{.*} ', 				True, False, None, None, None, None))
 
 # Bitcap
 tokens.append(Token('BITCAP', 			'[1-9][0-9]*@',	True, False, None, None, None, None))
-tokens.append(Token('DEFAULT BITCAP', 	'@[1-9][0-9]*', True, False, None, None, None, None))
+tokens.append(Token('DEFAULT BITCAP', 	'@[1-9][0-9]* ', True, False, None, None, None, None))
 
 # Comment
 tokens.append(Token('COMMENT', '\'.*\'', True, False, None, None, None, None))
