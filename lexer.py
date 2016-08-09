@@ -11,7 +11,7 @@ class Lexer():
 		sys.exit(404)
 
 	# Lexes / parses the block of tokenized code
-	def lex(self):
+	def lex(self, debug):
 		for i, line in enumerate(self.block):
 			if line[0].token.is_instruction:
 
@@ -26,16 +26,20 @@ class Lexer():
 				args = line[len(returns) + 1:]
 
 				##### FOR DEBUG
-				if line[0].token.show_name != 'INPUT':
-					print ('\t', i, '\t->', line[0].token.show_name, end=' [ ')
-					[print (str(x.data), end=', ') for x in returns]
-					print ('] [', end=' ')
-					for x in args:
-						if x.token.show_name != 'BLOCK':
-							print (str(x.data), end=', ')
+				if debug:
+					if line[0].token.show_name != 'INPUT':
+						if line[0].token.show_name == 'CUSTOM FUNCTION':
+							print('\t', i, '\t->', line[0].token.id, end=' [ ')
 						else:
-							print ('{ ... }', end=', ')
-					print (']')
+							print ('\t', i, '\t->', line[0].token.show_name, end=' [ ')
+						[print (str(x.data), end=', ') for x in returns]
+						print ('] [', end=' ')
+						for x in args:
+							if x.token.show_name != 'BLOCK':
+								print (str(x.data), end=', ')
+							else:
+								print ('{ ... }', end=', ')
+						print (']')
 
 				# Execute custom function
 				if line[0].token.show_name == 'CUSTOM FUNCTION':
@@ -50,14 +54,14 @@ class Lexer():
 						new_dict.dictionary[line[0].token.arguments[i].data] = value
 
 					lexer = Lexer(line[0].token.function, new_dict)
-					new_returns = lexer.lex()
+					new_returns = lexer.lex(debug)
 
 					# Match return variable names
 					for i, r in enumerate(returns):
-						# if len(new_dict.lookup(new_returns[i].data)) != line[0].data:
-						#	self.error_out('The value of ' + new_returns[i].data + ' did not match the specified bitcap for the instruction ' + line[0].token.id + '\nSpecified bitcap is ' + str(line[0].data) + ', but got ' + str(len(new_dict.lookup(new_returns[i].data))))
-						self.dict.dictionary[r.data] = new_dict.lookup(new_returns[i].data)
-
+						if len(new_dict.lookup(new_returns[i].data)) != line[0].data and line[0].token.show_name != 'CUSTOM FUNCTION':
+							self.error_out('The value of ' + new_returns[i].data + ' did not match the specified bitcap for the instruction ' + line[0].token.id + '\nSpecified bitcap is ' + str(line[0].data) + ', but got ' + str(len(new_dict.lookup(new_returns[i].data))))
+						else:
+							self.dict.dictionary[r.data] = new_dict.lookup(new_returns[i].data)
 					continue
 
 				# If a return token is met, add the variables to the returns list

@@ -1,7 +1,7 @@
 import token, re, sys
 
-def tokenize(raw_code):
-	tokenizer = Tokenizer(raw_code)
+def tokenize(raw_code, debug):
+	tokenizer = Tokenizer(raw_code, debug)
 	block = []
 	current_line = []
 	for i, tokendata in enumerate(tokenizer):
@@ -18,15 +18,16 @@ def tokenize(raw_code):
 			current_line = []
 
 		##### FOR DEBUG
-		if tokendata.token.show_name != 'BLOCK':
-			print('\t', i, '\t->', tokendata.token.show_name, '=', str(tokendata.data))
+		if debug:
+			if tokendata.token.show_name != 'BLOCK':
+				print('\t', i, '\t->', tokendata.token.show_name, '=', str(tokendata.data))
 
 		#if len(current_line) != 0:
 		#	block.append(current_line)
 	return block
 
 class Tokenizer():
-	def __init__(self, raw_code):
+	def __init__(self, raw_code, debug):
 		self.raw_code = re.sub('\s+', ' ', raw_code) + 'EOF'
 		##### FOR DEBUG
 		##### print (self.raw_code)
@@ -36,6 +37,7 @@ class Tokenizer():
 		self.default_bitcap = None
 		self.next_bitcap = None
 		self.function_line = []
+		self.debug = debug
 
 	def __iter__(self):
 		return self
@@ -126,13 +128,14 @@ class Tokenizer():
 
 								# If it's a block, tokenize it
 								if t.show_name == 'BLOCK':
-									print ('\n\t<-- START BLOCK')
-									block = tokenize(raw_chunk.strip()[1 :len(raw_chunk) - 2])
-									print('\tSTART BLOCK -->\n')
+									if self.debug: print ('\n\t<-- START BLOCK')
+									block = tokenize(raw_chunk.strip()[1 :len(raw_chunk) - 2], self.debug)
+									if self.debug: print('\tSTART BLOCK -->\n')
 
-									for line in block:
-										for tokendata in line:
-											print (tokendata.token.show_name)
+									if self.debug:
+										for line in block:
+											for tokendata in line:
+												print (tokendata.token.show_name)
 
 								# If block belongs to a function, declare the function with the block
 									if self.instruction.show_name == 'FUNCTION':
