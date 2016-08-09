@@ -8,17 +8,23 @@ class VariableDictionary():
 	def lookup(self, identifier):
 
 		# Check for index
-		index = re.search('[0-9]+-', identifier[::-1])
+		index = re.search('-[0-9]+', identifier)
 		if index is not None:
-			sub_str = index.group(0)
-			identifier = identifier.replace(sub_str[::-1], '')
-			index = int(sub_str.replace('-', ''))
+			ss = index.group(0)
+			identifier = identifier.replace(ss, '')
+			ss = ss.replace('-', '')
+			index = int(ss)
+
 
 		# Lookup variable
 		try:
 			value = self.dictionary[identifier]
 			if index is not None:
-				return value[index]
+				if index < len(str(value)):
+					return value[index]
+				else:
+					print ('VARIABLE ERROR: The value of', value, 'does not have an index of', index)
+					sys.exit(404)
 			return value
 		except KeyError:
 			print ('VARIABLE DICTIONARY ERROR: The variable identifier \'' + identifier + '\' has not yet been declared')

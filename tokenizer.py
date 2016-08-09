@@ -117,7 +117,10 @@ class Tokenizer():
 
 								# If more return variables are needed, check that the token is a variable
 								if self.instruction.return_amount > self.argument_index and t.show_name != 'VARIABLE':
-									self.error_out('Expected ' + str(self.instruction.return_amount) + ' return variables for the instruction ' + self.instruction.show_name + ', but found ' + str(self.argument_index))
+									tmp = self.instruction.show_name
+									if tmp == 'CUSTOM FUNCTION' :
+										tmp = self.instruction.id
+									self.error_out('Expected ' + str(self.instruction.return_amount) + ' return variables for the instruction ' + tmp + ', but found ' + str(self.argument_index))
 
 								self.argument_index += 1
 
@@ -176,7 +179,7 @@ class Tokenizer():
 
 						# Handle bitcap and default bitcap
 						elif t.show_name.replace('DEFAULT ', '') == 'BITCAP':
-							bitcap = raw_chunk.replace('@', '').lstrip()
+							bitcap = raw_chunk.replace('@', '').strip()
 							if bitcap.isdigit():
 								if t.show_name[:7] == 'DEFAULT':
 									self.default_bitcap = int(bitcap)

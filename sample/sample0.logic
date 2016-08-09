@@ -1,5 +1,5 @@
 ' Full adder function '
-func $FULL-ADDER-1bit $A $B $Cin {
+func $FA-1bit $A $B $Cin {
     @1
     XOR $a0 $A $B;
     AND $a1 $A $B;
@@ -9,14 +9,26 @@ func $FULL-ADDER-1bit $A $B $Cin {
     RETURN $S $Cout;
 };
 
-func $FULL-ADDER-4bit $A $B {
+func $FAS-16bit $SUB $A $B {
     @1
-    FULL-ADDER-1bit $S0 $Cout0 $A-3 $B-3 0;
-    FULL-ADDER-1bit $S1 $Cout1 $A-2 $B-2 $Cout0;
-    FULL-ADDER-1bit $S2 $Cout2 $A-1 $B-1 $Cout1;
-    FULL-ADDER-1bit $S3 $Cout3 $A-0 $B-0 $Cout2;
-    4@LET $S $S3 $S2 $S1 $S0;
-    RETURN $S $Cout3;
+    FA-1bit $S0 $Cout0 $A-15 $B-15 0;
+    FA-1bit $S1 $Cout1 $A-14 $B-14 $Cout0;
+    FA-1bit $S2 $Cout2 $A-13 $B-13 $Cout1;
+    FA-1bit $S3 $Cout3 $A-12 $B-12 $Cout2;
+    FA-1bit $S4 $Cout4 $A-11 $B-11 $Cout3;
+    FA-1bit $S5 $Cout5 $A-10 $B-10 $Cout4;
+    FA-1bit $S6 $Cout6 $A-9 $B-9 $Cout5;
+    FA-1bit $S7 $Cout7 $A-8 $B-8 $Cout6;
+    FA-1bit $S8 $Cout8 $A-7 $B-7 $Cout7;
+    FA-1bit $S9 $Cout9 $A-6 $B-6 $Cout8;
+    FA-1bit $S10 $Cout10 $A-5 $B-5 $Cout9;
+    FA-1bit $S11 $Cout11 $A-4 $B-4 $Cout10;
+    FA-1bit $S12 $Cout12 $A-3 $B-3 $Cout11;
+    FA-1bit $S13 $Cout13 $A-2 $B-2 $Cout12;
+    FA-1bit $S14 $Cout14 $A-1 $B-1 $Cout13;
+    FA-1bit $S15 $Cout15 $A-0 $B-0 $Cout14;
+    16@LET $S $S15 $S14 $S13 $S12 $S11 $S10 $S9 $S8 $S7 $S6 $S5 $S4 $S3 $S2 $S1 $S0;
+    RETURN $S $Cout15;
 };
 @16
 
@@ -25,6 +37,6 @@ func $FULL-ADDER-4bit $A $B {
 LET $A 0111010101011001;
 LET $B 0111001010110110;
 
-4@FULL-ADDER-4bit $S $Cout $A $B;
+FAS-16bit 0 $S $Cout $A $B;
 
 "h$A + $B = $S [$Cout]"
