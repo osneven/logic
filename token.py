@@ -17,11 +17,6 @@ class TokenData:
 		self.token = token
 		self.data = data
 
-# Bitcap overflow exception
-def bitcap_err():
-	print ('LEXER ERROR: A bit length did not match the specified bitcap')
-	sys.exit(404)
-
 # Convert all instances of type VARIABLE in a list to it's value
 def constants_of_list(dict, list):
 	values = []
@@ -35,31 +30,24 @@ def constants_of_list(dict, list):
 ########## Init build-in instruction functions
 
 # Assigns a value to a variable
-def ins_assignment(dict, bitcap, returns, args):
+def ins_assignment(dict, returns, args):
 	args = constants_of_list(dict, args)
 	value = ''
 	for arg in args:
 		value += arg
-
-	if len(value) != bitcap:
-		bitcap_err()
-	else:
-		dict.dictionary[returns[0].data] = value
+	dict.dictionary[returns[0].data] = value
 
 # Assigns the user input to a variable
-def ins_input(dict, bitcap, returns, args):
+def ins_input(dict, returns, args):
 	value = input()
 	if re.match('[01]+', value):
-		if len(value) != bitcap:
-			bitcap_err()
-		else:
-			dict.dictionary[returns[0].data] = value
+		dict.dictionary[returns[0].data] = value
 	else:
 		print ('LEXER ERROR: The given input needs to be a binary integer')
 		sys.exit(404)
 
 # The bitwise NOT operator
-def ins_not(dict, bitcap, returns, args):
+def ins_not(dict, returns, args):
 	args = constants_of_list(dict, args)
 	value = args[0]
 	not_value = ''
@@ -68,13 +56,10 @@ def ins_not(dict, bitcap, returns, args):
 			not_value += '1'
 		elif c == '1':
 			not_value += '0'
-	if len(not_value) != bitcap:
-		bitcap_err()
-	else:
-		dict.dictionary[returns[0].data] = not_value
+	dict.dictionary[returns[0].data] = not_value
 
 # The bitwise AND operator
-def ins_and(dict, bitcap, returns, args):
+def ins_and(dict, returns, args):
 	args = constants_of_list(dict, args)
 	and_value = ''
 	prev = None
@@ -90,13 +75,10 @@ def ins_and(dict, bitcap, returns, args):
 				else:
 					and_value += '0'
 			prev = and_value
-	if len(and_value) != bitcap :
-		bitcap_err()
-	else :
-		dict.dictionary[returns[0].data] = and_value
+	dict.dictionary[returns[0].data] = and_value
 
 # THe bitwise OR operator
-def ins_or(dict, bitcap, returns, args):
+def ins_or(dict, returns, args):
 	args = constants_of_list(dict, args)
 	or_value = ''
 	prev = None
@@ -112,13 +94,10 @@ def ins_or(dict, bitcap, returns, args):
 				else :
 					or_value += '0'
 			prev = or_value
-	if len(or_value) != bitcap :
-		bitcap_err()
-	else :
-		dict.dictionary[returns[0].data] = or_value
+	dict.dictionary[returns[0].data] = or_value
 
 # The bitwise NAND operator
-def ins_nand(dict, bitcap, returns, args):
+def ins_nand(dict, returns, args):
 	args = constants_of_list(dict, args)
 	and_value = ''
 	prev = None
@@ -134,13 +113,10 @@ def ins_nand(dict, bitcap, returns, args):
 				else :
 					and_value += '1'
 			prev = and_value
-	if len(and_value) != bitcap :
-		bitcap_err()
-	else :
-		dict.dictionary[returns[0].data] = and_value
+	dict.dictionary[returns[0].data] = and_value
 
 # The bitwise NOR operator
-def ins_nor(dict, bitcap, returns, args):
+def ins_nor(dict, returns, args):
 	args = constants_of_list(dict, args)
 	or_value = ''
 	prev = None
@@ -156,13 +132,10 @@ def ins_nor(dict, bitcap, returns, args):
 				else :
 					or_value += '1'
 			prev = or_value
-	if len(or_value) != bitcap :
-		bitcap_err()
-	else :
-		dict.dictionary[returns[0].data] = or_value
+	dict.dictionary[returns[0].data] = or_value
 
 # The bitwise XOR operator
-def ins_xor(dict, bitcap, returns, args):
+def ins_xor(dict, returns, args):
 	args = constants_of_list(dict, args)
 	and_value = ''
 	prev = None
@@ -178,13 +151,10 @@ def ins_xor(dict, bitcap, returns, args):
 				else :
 					and_value += '0'
 			prev = and_value
-	if len(and_value) != bitcap :
-		bitcap_err()
-	else :
-		dict.dictionary[returns[0].data] = and_value
+	dict.dictionary[returns[0].data] = and_value
 
 # The bitwise XNOR operator
-def ins_xnor(dict, bitcap, returns, args):
+def ins_xnor(dict, returns, args):
 	args = constants_of_list(dict, args)
 	and_value = ''
 	prev = None
@@ -200,13 +170,10 @@ def ins_xnor(dict, bitcap, returns, args):
 				else :
 					and_value += '0'
 			prev = and_value
-	if len(and_value) != bitcap :
-		bitcap_err()
-	else :
-		dict.dictionary[returns[0].data] = and_value
+	dict.dictionary[returns[0].data] = and_value
 
 # Prints a message to the screen
-def ins_verbal(dict, bitcap, returns, args):
+def ins_verbal(dict, returns, args):
 	value = args[0]
 	if len(value) < 1:
 		return
@@ -219,13 +186,15 @@ def ins_verbal(dict, bitcap, returns, args):
 	elif value[0] == 'x':
 		mode = 2
 		value = value[1:]
-	for var in dict.dictionary:
-		lookup = dict.lookup(var)
-		if mode == 1: # Print in base 10
-			lookup = str(int(lookup, 2))
-		elif mode == 2:
-			lookup = hex(int(lookup, 2))[2:]
-		value = value.replace('$' + var, lookup)
+
+	ids = re.findall('\$[0-9a-zA-Z_-]+', value)
+	for id in ids:
+		var = dict.lookup(id.strip())
+		if mode == 1 :  # Print in base 10
+			var = str(int(var, 2))
+		elif mode == 2 :
+			var = hex(int(var, 2))[2 :]
+		value = value.replace(id, var)
 
 	chunk = ''
 	for c in value:
@@ -254,7 +223,7 @@ def ins_verbal(dict, bitcap, returns, args):
 		print ()
 
 # Exits the program
-def ins_exit(dict, bitcap, returns, args):
+def ins_exit(dict, returns, args):
 	args = constants_of_list(dict, args)
 	print ('Terminating with exit code', args[0], '...')
 	sys.exit()

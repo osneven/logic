@@ -6,6 +6,7 @@ class VariableDictionary():
 
 	# Looks up af value from an variable identifier, errors out if identifier doesn't exist
 	def lookup(self, identifier):
+		identifier = identifier.replace('$', '')
 
 		# Check for index
 		index = re.search('-[0-9]+', identifier)
@@ -21,7 +22,7 @@ class VariableDictionary():
 			value = self.dictionary[identifier]
 			if index is not None:
 				if index < len(str(value)):
-					return value[index]
+					return value[::-1][index]
 				else:
 					print ('VARIABLE ERROR: The value of', value, 'does not have an index of', index)
 					sys.exit(404)

@@ -1,4 +1,18 @@
 '16 bit ALU'
+'Author: Oliver S. Neven'
 
+'1 bit full adder'
+func $FAS-1b $A $B $Cin $M {
+    XOR $B $B $M;
+    XOR $AxB $A $B;
+    AND $AaB $A $B;
+    XOR $S $AxB $Cin;
+    AND $AxBaCin $AxB $Cin;
+    OR $Cout $AaB $AxBaCin;
+    RETURN $S $Cout;
+};
 
-
+'16 bit full adder subtractor'
+func $FAS-16b $A $B $Cin $M {
+    
+};

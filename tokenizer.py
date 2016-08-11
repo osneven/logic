@@ -34,8 +34,6 @@ class Tokenizer():
 		self.instruction = None
 		self.argument_index = 0
 		self.terminated = False
-		self.default_bitcap = None
-		self.next_bitcap = None
 		self.function_line = []
 		self.debug = debug
 
@@ -94,6 +92,7 @@ class Tokenizer():
 				raw_chunk = raw_chunk[1:]
 
 			##### FOR DEBUG
+			##### if self.debug:
 			##### print (raw_chunk)
 
 			# Find matching token
@@ -102,9 +101,11 @@ class Tokenizer():
 
 					# Handle both verbal and non-verbal comments
 					if t.show_name == 'COMMENT':
+						self.terminated = False
 						raw_chunk = ''
 						break
 					if t.show_name == 'VERBAL':
+						self.terminated = False
 						return [token.TokenData(t, raw_chunk.replace('"', '')), i]
 
 					# Instruction undergoing ...
@@ -170,28 +171,10 @@ class Tokenizer():
 
 						# Handle new instruction
 						if t.is_instruction:
-							if self.next_bitcap is None and t.show_name != 'FUNCTION' and t.show_name != 'EXIT':
-								self.error_out('No bitcap specified for the instruction ' + t.show_name)
-
 							self.instruction = t
 							self.argument_index = 0
-							r = [token.TokenData(t, self.next_bitcap), i]
-							if self.next_bitcap != self.default_bitcap:
-								self.next_bitcap = self.default_bitcap
+							r = [token.TokenData(t, None), i]
 							return r
-
-						# Handle bitcap and default bitcap
-						elif t.show_name.replace('DEFAULT ', '') == 'BITCAP':
-							bitcap = raw_chunk.replace('@', '').strip()
-							if bitcap.isdigit():
-								if t.show_name[:7] == 'DEFAULT':
-									self.default_bitcap = int(bitcap)
-									self.next_bitcap = self.default_bitcap
-								else:
-									self.next_bitcap = int(bitcap)
-								raw_chunk = ''
-							else:
-								self.error_out('The bitcap must be an integer')
 						else:
 							self.error_out('Expected an instruction but found type ' + t.show_name)
 

@@ -17,7 +17,7 @@ class Lexer():
 
 				# Handle verbal
 				if line[0].token.show_name == 'VERBAL':
-					line[0].token.function(self.dict, None, [], [line[0].data])
+					line[0].token.function(self.dict, [], [line[0].data])
 					continue
 
 				returns = []
@@ -58,10 +58,7 @@ class Lexer():
 
 					# Match return variable names
 					for i, r in enumerate(returns):
-						if len(new_dict.lookup(new_returns[i].data)) != line[0].data and line[0].token.show_name != 'CUSTOM FUNCTION':
-							self.error_out('The value of ' + new_returns[i].data + ' did not match the specified bitcap for the instruction ' + line[0].token.id + '\nSpecified bitcap is ' + str(line[0].data) + ', but got ' + str(len(new_dict.lookup(new_returns[i].data))))
-						else:
-							self.dict.dictionary[r.data] = new_dict.lookup(new_returns[i].data)
+						self.dict.dictionary[r.data] = new_dict.lookup(new_returns[i].data)
 					continue
 
 				# If a return token is met, add the variables to the returns list
@@ -70,7 +67,7 @@ class Lexer():
 
 				# Execute current instruction
 				if line[0].token.function is not None:
-					line[0].token.function(self.dict, line[0].data, returns, args)
+					line[0].token.function(self.dict, returns, args)
 
 
 					##### FOR DEBUG
